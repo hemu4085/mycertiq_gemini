@@ -52,9 +52,20 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
   const [period, setPeriod] = useState('12 Month');
   const [customDates, setCustomDates] = useState({ start: '', end: '' });
   const [plannedIds, setPlannedIds] = useState<number[]>([]);
+  const [stateSearch, setStateSearch] = useState('');
   
   // Tri-state filter system: -1 (exclude), +1 (include), 0/null (neutral)
   const [activeFilters, setActiveFilters] = useState<Record<string, FilterState>>({});
+
+  // Filter states based on search query
+  const filteredStates = useMemo(() => {
+    const query = stateSearch.toLowerCase().trim();
+    if (!query) return US_STATES;
+    return US_STATES.filter(s => 
+      s.name.toLowerCase().includes(query) || 
+      s.code.toLowerCase().includes(query)
+    );
+  }, [stateSearch]);
 
   const allCourses = useMemo(() => [
     { 
@@ -306,42 +317,70 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
 
               {/* UNIFIED: State Location with Include/Exclude (Tri-State) */}
               <section className="space-y-3">
-                <h3 className="text-xs font-black text-[#45556C] uppercase tracking-widest">CME Location (State)</h3>
-                {/* Scrollable frame for full jurisdiction list */}
+                <div className="flex items-center justify-between">
+                  <h3 className="text-xs font-black text-[#45556C] uppercase tracking-widest">CME Location (State)</h3>
+                  {stateSearch && (
+                    <button 
+                      onClick={() => setStateSearch('')}
+                      className="text-[10px] font-bold text-[#155DFC] hover:underline"
+                    >
+                      Clear
+                    </button>
+                  )}
+                </div>
+
+                {/* Search Input Field */}
+                <div className="relative group">
+                  <input
+                    type="text"
+                    placeholder="Search states (e.g. FL or Hawaii)..."
+                    value={stateSearch}
+                    onChange={(e) => setStateSearch(e.target.value)}
+                    className="w-full text-[12px] p-2 pl-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg focus:outline-none focus:border-[#155DFC] transition-colors"
+                  />
+                </div>
+
+                {/* Scrollable frame using filteredStates instead of US_STATES */}
                 <div className="max-h-[300px] overflow-y-auto pr-2 custom-scrollbar space-y-1.5 border-b border-[#F1F5F9] pb-4">
-                  {US_STATES.map(state => {
-                    const filterState = activeFilters[state.code] || 0;
-                    return (
-                      <div key={state.code} className="flex items-center justify-between text-[13px]">
-                        <span className={`font-medium transition-colors ${
-                          filterState === 1 ? 'text-emerald-600' : 
-                          filterState === -1 ? 'text-red-400 line-through' : 'text-[#314158]'
-                        }`}>
-                          {state.name}
-                        </span>
-                        <div className="flex gap-1">
-                          <button 
-                            onClick={() => toggleFilter(state.code, 1)} 
-                            className={`p-1 rounded ${
-                              filterState === 1 ? 'text-emerald-600 bg-emerald-50' : 'text-gray-300 hover:text-emerald-400'
-                            }`}
-                            title="Include (Emerald/Circle)"
-                          >
-                            <CircleDot size={16}/>
-                          </button>
-                          <button 
-                            onClick={() => toggleFilter(state.code, -1)} 
-                            className={`p-1 rounded ${
-                              filterState === -1 ? 'text-red-500 bg-red-50' : 'text-gray-300 hover:text-red-400'
-                            }`}
-                            title="Exclude (Red/Minus)"
-                          >
-                            <MinusCircle size={16}/>
-                          </button>
+                  {filteredStates.length > 0 ? (
+                    filteredStates.map(state => {
+                      const filterState = activeFilters[state.code] || 0;
+                      return (
+                        <div key={state.code} className="flex items-center justify-between text-[13px]">
+                          <span className={`font-medium transition-colors ${
+                            filterState === 1 ? 'text-emerald-600' : 
+                            filterState === -1 ? 'text-red-400 line-through' : 'text-[#314158]'
+                          }`}>
+                            {state.name}
+                          </span>
+                          <div className="flex gap-1">
+                            <button 
+                              onClick={() => toggleFilter(state.code, 1)} 
+                              className={`p-1 rounded ${
+                                filterState === 1 ? 'text-emerald-600 bg-emerald-50' : 'text-gray-300 hover:text-emerald-400'
+                              }`}
+                              title="Include (Emerald/Circle)"
+                            >
+                              <CircleDot size={16}/>
+                            </button>
+                            <button 
+                              onClick={() => toggleFilter(state.code, -1)} 
+                              className={`p-1 rounded ${
+                                filterState === -1 ? 'text-red-500 bg-red-50' : 'text-gray-300 hover:text-red-400'
+                              }`}
+                              title="Exclude (Red/Minus)"
+                            >
+                              <MinusCircle size={16}/>
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })
+                  ) : (
+                    <div className="text-[11px] text-[#99A1AF] italic text-center py-4">
+                      No states matching "{stateSearch}"
+                    </div>
+                  )}
                 </div>
               </section>
 
