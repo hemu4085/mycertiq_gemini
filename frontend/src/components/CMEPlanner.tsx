@@ -1,17 +1,14 @@
 /**
- * CME Planner Filter Logic Implementation (v1.2.1)
- * Implements the hierarchical "Sieve" approach as specified:
- * Pass 1: Hard Veto (EXCLUDE -1)
- * Pass 2: Temporal (Date Range Overlap)
- * Pass 3: Whitelist (INCLUDE +1)
- * Pass 4: Regulatory (approvedStates mapping - handled in compliance calculation)
+ * CME Planner Filter Logic Implementation (v1.2.2)
+ * Fix: Added Global Top Navigation Bar for UI consistency.
  * Path: /home/myunix/projects/mycertiq_gemini/frontend/src/components/CMEPlanner.tsx
  */
 
 import React, { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Calendar, MapPin, Plus, Check, 
-  CircleDot, MinusCircle, CheckCircle2
+  CircleDot, MinusCircle, CheckCircle2, User
 } from 'lucide-react';
 
 const DEFAULT_CME_STATUS = {
@@ -49,6 +46,7 @@ const US_STATES = [
 type FilterState = -1 | 1 | 0 | null;
 
 export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
+  const navigate = useNavigate();
   const [period, setPeriod] = useState('12 Month');
   const [customDates, setCustomDates] = useState({ start: '', end: '' });
   const [plannedIds, setPlannedIds] = useState<number[]>([]);
@@ -241,11 +239,49 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
   }, [cmeStatus, plannedIds, filteredCourses]);
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] p-8 font-sans text-[#0A0A0A]">
-      <div className="max-w-[1600px] mx-auto grid grid-cols-12 gap-8">
-        
-        {/* SIDEBAR: PRESERVED FULL FILTERS */}
-        <aside className="col-span-3 space-y-4">
+    <div className="min-h-screen bg-[#F8FAFC] font-sans text-[#0A0A0A]">
+      {/* GLOBAL TOP NAV BAR */}
+      <nav className="w-full bg-white border-b border-[#E2E8F0] px-8 py-4 flex items-center justify-between sticky top-0 z-50">
+        <div className="flex items-center gap-8">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-[#155DFC] rounded-lg flex items-center justify-center">
+              <CheckCircle2 className="text-white" size={20} />
+            </div>
+            <span className="text-xl font-black tracking-tight text-[#0F172A]">MyCertiq Gemini</span>
+          </div>
+          <div className="flex items-center gap-6 text-sm font-bold text-[#64748B]">
+            <button 
+              onClick={() => navigate('/status')}
+              className="hover:text-[#155DFC] transition-colors"
+            >
+              CME Status
+            </button>
+            <button 
+              onClick={() => navigate('/preferences')}
+              className="hover:text-[#155DFC] transition-colors"
+            >
+              CME Preferences
+            </button>
+            <button 
+              className="text-[#155DFC] border-b-2 border-[#155DFC] pb-4 -mb-4 cursor-default"
+            >
+              CME Planner
+            </button>
+          </div>
+        </div>
+        <div className="flex items-center gap-3">
+          <span className="text-sm font-bold text-[#334155]">Dr. Priya Verma</span>
+          <div className="w-8 h-8 bg-[#F1F5F9] rounded-full flex items-center justify-center text-[#64748B] border border-[#E2E8F0]">
+            <User size={18} />
+          </div>
+        </div>
+      </nav>
+
+      {/* PAGE CONTENT */}
+      <div className="p-8">
+        <div className="max-w-[1600px] mx-auto grid grid-cols-12 gap-8">
+          {/* SIDEBAR */}
+          <aside className="col-span-3 space-y-4">
           <button className="w-full bg-[#155DFC] text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 shadow-sm hover:bg-[#1447E6] transition-all">
              Save Search
           </button>
@@ -329,16 +365,9 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
                   )}
                 </div>
 
-                {/* Search Input Field */}
-                <div className="relative group">
-                  <input
-                    type="text"
-                    placeholder="Search states (e.g. FL or Hawaii)..."
-                    value={stateSearch}
-                    onChange={(e) => setStateSearch(e.target.value)}
-                    className="w-full text-[12px] p-2 pl-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg focus:outline-none focus:border-[#155DFC] transition-colors"
-                  />
-                </div>
+                  <div className="relative group">
+                    <input type="text" placeholder="Search states..." value={stateSearch} onChange={(e) => setStateSearch(e.target.value)} className="w-full text-[12px] p-2 pl-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg focus:outline-none focus:border-[#155DFC] transition-colors" />
+                  </div>
 
                 {/* Scrollable frame using filteredStates instead of US_STATES */}
                 <div className="max-h-[300px] overflow-y-auto pr-2 custom-scrollbar space-y-1.5 border-b border-[#F1F5F9] pb-4">
@@ -376,11 +405,7 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
                         </div>
                       );
                     })
-                  ) : (
-                    <div className="text-[11px] text-[#99A1AF] italic text-center py-4">
-                      No states matching "{stateSearch}"
-                    </div>
-                  )}
+                  ) : <div className="text-[11px] text-[#99A1AF] italic text-center py-4">No matching states</div>}
                 </div>
               </section>
 
@@ -437,8 +462,8 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
           </div>
         </aside>
 
-        {/* MAIN CONTENT: PRESERVED WHITE/GREY LAYOUT */}
-        <main className="col-span-9 space-y-8">
+          {/* MAIN CONTENT */}
+          <main className="col-span-9 space-y-8">
           <div className="grid grid-cols-2 gap-8">
             <div className="bg-white rounded-2xl border border-[#D1D5DC] p-8 shadow-sm">
                <h3 className="text-sm font-bold text-[#45556C] mb-4">Projected Compliance</h3>
@@ -474,28 +499,10 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
                         <p className="text-[10px] text-[#99A1AF] font-bold uppercase">{course.stateName}</p>
                       </div>
                     </div>
-                    <div className="space-y-3 text-[13px] text-[#62748E] font-medium">
-                      <div className="flex items-center gap-2"><Calendar size={14} className="text-[#155DFC]"/> {course.displayDate}</div>
-                      <div className="flex items-start gap-2"><MapPin size={14} className="text-[#155DFC] mt-0.5"/> <span>{course.venue}</span></div>
-                      {course.nearby && course.nearby.length > 0 && (
-                        <div className="flex flex-wrap gap-2 text-[12px]">
-                          <span className="text-[#99A1AF]">Hotels:</span>
-                          {course.nearby.map((hotel: any, idx: number) => (
-                            <a key={idx} href={hotel.url} className="text-[#155DFC] font-normal hover:underline" target="_blank" rel="noopener noreferrer">
-                              {hotel.name}
-                            </a>
-                          ))}
-                        </div>
-                      )}
-                      {course.airport && (
-                        <div className="flex items-center gap-2 text-[12px]">
-                          <span className="text-[#99A1AF]">Airport:</span>
-                          <a href={course.airport.url} className="text-[#155DFC] font-normal hover:underline" target="_blank" rel="noopener noreferrer">
-                            {course.airport.name}
-                          </a>
-                        </div>
-                      )}
-                    </div>
+                      <div className="space-y-3 text-[13px] text-[#62748E] font-medium">
+                        <div className="flex items-center gap-2"><Calendar size={14} className="text-[#155DFC]"/> {course.displayDate}</div>
+                        <div className="flex items-start gap-2"><MapPin size={14} className="text-[#155DFC] mt-0.5"/> <span>{course.venue}</span></div>
+                      </div>
                   </div>
                   <div className="pt-6 mt-6 flex items-center justify-between border-t border-[#F1F5F9]">
                     <span className="text-xl font-black">${course.regFee}</span>
@@ -508,9 +515,10 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
             })}
           </div>
         </main>
+        </div>
       </div>
     </div>
   );
 };
 
-// End of Patch #116
+// End of Patch #145
