@@ -62,27 +62,41 @@ export const CMEPreferences = () => {
   return (
     <div className="bg-white min-h-screen font-sans text-[#101828]">
       {/* NAV BAR (Strictly Version 1.1.1) */}
-      <nav className="border-b border-[#D1D5DC] px-8 py-4 flex justify-between items-center bg-white sticky top-0 z-50">
-        <div className="flex items-center gap-8">
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/status')}>
-            <div className="w-8 h-8 bg-[#155DFC] rounded-lg flex items-center justify-center text-white">
-              <ShieldCheck size={20} fill="currentColor" />
-            </div>
-            <span className="font-bold text-xl tracking-tight">MyCertiq Gemini</span>
-          </div>
-          <div className="flex gap-6 text-sm font-bold text-[#4A5565]">
-            <button onClick={() => navigate('/status')} className="hover:text-[#101828]">CME Status</button>
-            <button className="text-[#155DFC] border-b-2 border-[#155DFC] pb-5 translate-y-5">CME Preferences</button>
-            <button onClick={() => navigate('/planner')} className="hover:text-[#101828]">CME Planner</button>
-          </div>
+
+      <nav className="w-full h-16 bg-white border-b border-[#E2E8F0] px-8 flex items-center justify-between sticky top-0 z-[100]">
+        <div className="flex items-center gap-8 h-full">
+          <button 
+            onClick={() => navigate('/cme-status')} 
+            className="h-full flex items-center pt-1 text-sm font-bold text-[#64748B] border-b-2 border-transparent hover:text-[#155DFC] transition-all"
+          >
+            CME Status
+          </button>
+          
+          <button 
+            className="h-full flex items-center pt-1 text-sm font-bold text-[#155DFC] border-b-2 border-[#155DFC] cursor-default"
+          >
+            CME Preferences
+          </button>
+          
+          <button 
+            onClick={() => navigate('/cme-planner')} 
+            className="h-full flex items-center pt-1 text-sm font-bold text-[#64748B] border-b-2 border-transparent hover:text-[#155DFC] transition-all"
+          >
+            CME Planner
+          </button>
         </div>
+
         <div className="flex items-center gap-3">
-          <span className="text-sm font-bold text-[#4A5565]">Dr. Priya Verma</span>
-          <div className="w-8 h-8 bg-[#F3F4F6] rounded-full border border-[#D1D5DC] flex items-center justify-center">
-            <User size={16} className="text-[#4A5565]" />
-          </div>
+          <span className="text-sm font-bold text-[#334155]">Dr. Priya Verma</span>
+          <button 
+            onClick={() => navigate('/profile')} 
+            className="w-10 h-10 bg-[#F1F5F9] rounded-full flex items-center justify-center text-[#64748B] border border-[#E2E8F0] hover:border-[#155DFC] transition-all"
+          >
+            <User size={22} />
+          </button>
         </div>
       </nav>
+
 
       <div className="max-w-7xl mx-auto py-12 px-6 space-y-10">
         {/* HEADER AREA (Strictly Version 1.1.1) */}

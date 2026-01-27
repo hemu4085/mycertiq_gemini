@@ -1,14 +1,14 @@
 /**
- * Cursor Agent Patch #155 - UserProfile Routing Activation
- * Execution Mode: Atomic Update
+ * Cursor Agent Patch #126 - Routing Force & Navigation Fix
  * Path: /home/myunix/projects/mycertiq_gemini/frontend/src/App.tsx
  */
 
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { CMEStatus } from './components/CMEStatus'; 
+import { CMEStatus } from './components/CMEStatus'; // Ensure this points to the new file
 import { CMEPlanner } from './components/CMEPlanner';
 import { CMEPreferences } from './components/CMEPreferences';
 import { UserProfile } from './components/UserProfile';
+
 
 // MOCK_DATA for CMEStatus component
 const MOCK_DATA = {
@@ -30,7 +30,7 @@ const GlobalOverrides = () => (
       border-radius: 9999px !important;
     }
     .bg-red-600, .bg-red-500 {
-      background-color: #155DFC !important; 
+      background-color: #155DFC !important; /* The Nuclear Option: Force all primary reds to Brand Blue */
     }
   `}</style>
 );
@@ -39,25 +39,23 @@ function App() {
   return (
     <Router>
       <GlobalOverrides />
-      <Routes>
-        {/* Default Landing */}
-        <Route path="/" element={<Navigate to="/cme-status" replace />} />
-        
-        {/* Main Application Routes */}
-        <Route path="/cme-status" element={<CMEStatus statusData={MOCK_DATA} />} />
-        <Route path="/cme-preferences" element={<CMEPreferences />} />
-        <Route path="/cme-planner" element={<CMEPlanner />} />
-        
-        {/* New Profile Route - This connects the My Profile icon */}
-        <Route path="/profile" element={<UserProfile />} />
-        
-        {/* Fallback to Status if route not found */}
-        <Route path="*" element={<Navigate to="/cme-status" replace />} />
-      </Routes>      
+
+        <Routes>
+          {/* Force the default landing page to be our new CME Status screen */}
+          <Route path="/" element={<Navigate to="/cme-status" replace />} />
+          
+          {/* Updated paths to match the new Navigation Bar code */}
+          <Route path="/cme-status" element={<CMEStatus statusData={MOCK_DATA} />} />
+          <Route path="/cme-preferences" element={<CMEPreferences />} />
+          <Route path="/cme-planner" element={<CMEPlanner />} />
+          
+          {/* Fallback to Status if route not found */}
+          <Route path="*" element={<Navigate to="/cme-status" replace />} />
+        </Routes>      
     </Router>
   );
 }
 
 export default App;
 
-// End of Patch #155
+// End of Patch #126

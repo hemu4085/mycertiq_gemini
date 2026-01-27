@@ -1,6 +1,6 @@
 /**
- * CME Planner Filter Logic Implementation (v1.2.3)
- * Fix: Unified Navigation Bar structure for pixel-perfect alignment.
+ * CME Planner Filter Logic Implementation (v1.2.2)
+ * Fix: Added Global Top Navigation Bar for UI consistency.
  * Path: /home/myunix/projects/mycertiq_gemini/frontend/src/components/CMEPlanner.tsx
  */
 
@@ -52,8 +52,10 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
   const [plannedIds, setPlannedIds] = useState<number[]>([]);
   const [stateSearch, setStateSearch] = useState('');
   
+  // Tri-state filter system: -1 (exclude), +1 (include), 0/null (neutral)
   const [activeFilters, setActiveFilters] = useState<Record<string, FilterState>>({});
 
+  // Filter states based on search query
   const filteredStates = useMemo(() => {
     const query = stateSearch.toLowerCase().trim();
     if (!query) return US_STATES;
@@ -71,7 +73,7 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
       nearby: [{ name: "Four Seasons Maui", url: "#" }],
       airport: { name: "Kahului (OGG)", url: "#" }, date: "2026-03-12", dateEnd: "2026-03-16", displayDate: "Mar 12-16, 2026", 
       tags: ['Beach', 'Luxury Resort', 'Direct Flights'],
-      isWellness: false 
+      isWellness: false // Regulatory Course
     },
     { 
       id: 2, title: "Rocky Mountain Winter Conference on EM", credits: 18, approvedStates: ['MA', 'IA'],
@@ -80,7 +82,7 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
       nearby: [{ name: "Limelight Snowmass", url: "#" }],
       airport: { name: "Aspen (ASE)", url: "#" }, date: "2026-02-28", dateEnd: "2026-03-04", displayDate: "Feb 28 - Mar 4, 2026", 
       tags: ['Skiing', 'Mountain', 'Resorts'],
-      isWellness: false 
+      isWellness: false // Regulatory Course
     },
     { 
       id: 3, title: "Essentials in Primary Care: Winter Session", credits: 20, approvedStates: ['FL', 'IA'],
@@ -89,7 +91,7 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
       nearby: [{ name: "LaPlaya Beach Resort", url: "#" }],
       airport: { name: "Fort Myers (RSW)", url: "#" }, date: "2026-02-09", dateEnd: "2026-02-13", displayDate: "Feb 9-13, 2026", 
       tags: ['Beach', 'Golf', 'Fine Dining'],
-      isWellness: false 
+      isWellness: false // Regulatory Course
     },
     { 
       id: 6, title: "Holistic Physician: Mind-Body Integration", credits: 10, approvedStates: [], 
@@ -98,7 +100,7 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
       nearby: [{ name: "Canyon Ranch Tucson", url: "#" }],
       airport: { name: "Tucson International (TUS)", url: "#" }, date: "2026-04-05", dateEnd: "2026-04-08", displayDate: "Apr 5-8, 2026", 
       tags: ['Yoga/Retreat', 'Boutique Stay'],
-      isWellness: true 
+      isWellness: true // Non-Regulatory/Wellness Course
     },
     { 
       id: 7, title: "Culinary Medicine & Napa Valley Viticulture", credits: 12, approvedStates: ['CA'],
@@ -120,60 +122,90 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
     }
   ], []);
 
+  /**
+   * Hierarchical "Sieve" Filter Logic (v1.2.1 + Credit Scope)
+   * Courses are processed through sequential layers.
+   * If a course fails a layer, it is excluded immediately.
+   */
   const filteredCourses = useMemo(() => {
     return allCourses.filter(course => {
+      // PASS 0: Credit Scope Logic (Highest Priority)
       const scopeStateApproved = activeFilters['State Approved'];
       const scopeWellness = activeFilters['General Wellness'];
 
+      // If "State Approved" is excluded, hide regulatory courses
       if (scopeStateApproved === -1 && !course.isWellness) return false;
+      // If "General Wellness" is excluded, hide wellness courses
       if (scopeWellness === -1 && course.isWellness) return false;
 
+      // Inclusion Logic: If either is "Included", filter strictly
       if (scopeStateApproved === 1 || scopeWellness === 1) {
         const matchesState = scopeStateApproved === 1 && !course.isWellness;
         const matchesWellness = scopeWellness === 1 && course.isWellness;
         if (!matchesState && !matchesWellness) return false;
       }
 
+      // PASS 1: Hard Veto (Critical Priority)
+      // If StateCode OR Tag is marked EXCLUDE (-1), hide the course immediately
       const excludedStates = Object.entries(activeFilters)
         .filter(([_, val]) => val === -1)
         .map(([k]) => k);
       
+      // Exclude credit scope filters from state/tag veto (already handled in PASS 0)
       const excludedFilters = excludedStates.filter(k => k !== 'State Approved' && k !== 'General Wellness');
       
-      if (excludedFilters.includes(course.stateCode)) return false; 
-      if (course.tags.some(tag => excludedFilters.includes(tag))) return false; 
+      if (excludedFilters.includes(course.stateCode)) return false; // Veto by StateCode
+      if (course.tags.some(tag => excludedFilters.includes(tag))) return false; // Veto by Tag
 
+      // PASS 2: Temporal (High Priority)
+      // If Period is "Specific Date Range", check overlap: (CStart <= UEnd) AND (CEnd >= UStart)
       if (period === 'Specific Date Range' && customDates.start && customDates.end) {
         const cStart = new Date(course.date);
         const cEnd = new Date(course.dateEnd);
         const uStart = new Date(customDates.start);
         const uEnd = new Date(customDates.end);
+        
+        // Date overlap check: course overlaps if (CStart <= UEnd) AND (CEnd >= UStart)
         if (!(cStart <= uEnd && cEnd >= uStart)) return false;
       }
 
+      // PASS 3: Whitelist (Medium Priority)
+      // If ANY filter is marked INCLUDE (+1), hide everything that does not match at least one Green selection
       const includedFilters = Object.entries(activeFilters)
         .filter(([_, val]) => val === 1)
         .map(([k]) => k);
       
+      // Filter out credit scope filters from lifestyle/state matching (already handled in PASS 0)
       const lifestyleTags = includedFilters.filter(i => i !== 'State Approved' && i !== 'General Wellness');
       
       if (lifestyleTags.length > 0) {
+        // Course must match at least one included state OR at least one included tag
         const stateMatch = lifestyleTags.includes(course.stateCode);
         const tagMatch = course.tags.some(tag => lifestyleTags.includes(tag));
-        if (!stateMatch && !tagMatch) return false;
+        if (!stateMatch && !tagMatch) return false; // No match to any included filter
       }
+
+      // PASS 4: Regulatory (Standard Priority)
+      // Mapping approvedStates to user's license profile is handled in creditProgress calculation
+      // This pass doesn't filter courses, only updates compliance bars
+      
       return true;
     });
   }, [activeFilters, allCourses, period, customDates]);
 
+  /**
+   * Toggle filter between tri-states: Neutral (0/null) → Include (+1) → Exclude (-1) → Neutral
+   */
   const toggleFilter = (key: string, type: 1 | -1) => {
     setActiveFilters(prev => {
       const current = prev[key] || 0;
+      // If clicking the same type, reset to neutral (0/null)
       if (current === type) {
         const newFilters = { ...prev };
         delete newFilters[key];
         return newFilters;
       }
+      // Otherwise, set to the clicked type
       return { ...prev, [key]: type };
     });
   };
@@ -182,12 +214,21 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
     setPlannedIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
   };
 
+  /**
+   * Total Credits: Sum of all credits where plannedIds.includes(course.id)
+   * Uses filteredCourses to ensure we only count visible courses
+   */
   const totalCredits = useMemo(() => {
     return filteredCourses
       .filter(c => plannedIds.includes(c.id))
       .reduce((sum, c) => sum + c.credits, 0);
   }, [filteredCourses, plannedIds]);
 
+  /**
+   * Projected Compliance: Current Credits + Planned Credits
+   * where course.approvedStates matches user.licenseState
+   * (Pass 4: Regulatory mapping)
+   */
   const creditProgress = useMemo(() => {
     return (cmeStatus?.states || []).map((state: any) => {
       const added = filteredCourses
@@ -199,9 +240,12 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] font-sans text-[#0A0A0A]">
-      {/* GLOBAL TOP NAV BAR (Unified structure for zero-shift navigation) */}
+      {/* GLOBAL TOP NAV BAR */}
+ 
+{/* GLOBAL TOP NAV BAR */}
       <nav className="w-full h-16 bg-white border-b border-[#E2E8F0] px-8 flex items-center justify-between sticky top-0 z-[100]">
         <div className="flex items-center gap-8 h-full">
+          {/* Ensure these paths match your App.tsx routes exactly */}
           <button 
             onClick={() => navigate('/cme-status')} 
             className="h-full flex items-center pt-1 text-sm font-bold text-[#64748B] border-b-2 border-transparent hover:text-[#155DFC] transition-all"
@@ -216,6 +260,7 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
             CME Preferences
           </button>
           
+          {/* CME Planner is the current page - No navigate call needed */}
           <button 
             className="h-full flex items-center pt-1 text-sm font-bold text-[#155DFC] border-b-2 border-[#155DFC] cursor-default"
           >
@@ -234,12 +279,15 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
         </div>
       </nav>
 
+      
+
       {/* PAGE CONTENT */}
       <div className="p-8">
         <div className="max-w-[1600px] mx-auto grid grid-cols-12 gap-8">
+          {/* SIDEBAR */}
           <aside className="col-span-3 space-y-4">
           <button className="w-full bg-[#155DFC] text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 shadow-sm hover:bg-[#1447E6] transition-all">
-               Save Search
+             Save Search
           </button>
 
           <div className="bg-white rounded-2xl border border-[#D1D5DC] p-6 space-y-8 shadow-sm">
@@ -249,6 +297,7 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
             </div>
             
             <div className="space-y-6 overflow-y-auto max-h-[70vh] pr-2 custom-scrollbar">
+              {/* Time Period Section */}
               <section className="space-y-3">
                 <h3 className="text-xs font-black text-[#45556C] uppercase tracking-widest">Time Period</h3>
                 <div className="grid grid-cols-1 gap-1">
@@ -266,6 +315,7 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
                 )}
               </section>
 
+              {/* Credit Scope Section */}
               <section className="space-y-3">
                 <h3 className="text-xs font-black text-[#45556C] uppercase tracking-widest">Credit Scope</h3>
                 <div className="space-y-1.5">
@@ -285,6 +335,7 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
                             className={`p-1 rounded ${
                               filterState === 1 ? 'text-emerald-600 bg-emerald-50' : 'text-gray-300 hover:text-emerald-400'
                             }`}
+                            title="Include (Emerald/Circle)"
                           >
                             <CircleDot size={16}/>
                           </button>
@@ -293,6 +344,7 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
                             className={`p-1 rounded ${
                               filterState === -1 ? 'text-red-500 bg-red-50' : 'text-gray-300 hover:text-red-400'
                             }`}
+                            title="Exclude (Red/Minus)"
                           >
                             <MinusCircle size={16}/>
                           </button>
@@ -303,6 +355,7 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
                 </div>
               </section>
 
+              {/* UNIFIED: State Location with Include/Exclude (Tri-State) */}
               <section className="space-y-3">
                 <div className="flex items-center justify-between">
                   <h3 className="text-xs font-black text-[#45556C] uppercase tracking-widest">CME Location (State)</h3>
@@ -315,9 +368,12 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
                     </button>
                   )}
                 </div>
+
                   <div className="relative group">
                     <input type="text" placeholder="Search states..." value={stateSearch} onChange={(e) => setStateSearch(e.target.value)} className="w-full text-[12px] p-2 pl-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg focus:outline-none focus:border-[#155DFC] transition-colors" />
                   </div>
+
+                {/* Scrollable frame using filteredStates instead of US_STATES */}
                 <div className="max-h-[300px] overflow-y-auto pr-2 custom-scrollbar space-y-1.5 border-b border-[#F1F5F9] pb-4">
                   {filteredStates.length > 0 ? (
                     filteredStates.map(state => {
@@ -331,10 +387,22 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
                             {state.name}
                           </span>
                           <div className="flex gap-1">
-                            <button onClick={() => toggleFilter(state.code, 1)} className={`p-1 rounded ${filterState === 1 ? 'text-emerald-600 bg-emerald-50' : 'text-gray-300 hover:text-emerald-400'}`}>
+                            <button 
+                              onClick={() => toggleFilter(state.code, 1)} 
+                              className={`p-1 rounded ${
+                                filterState === 1 ? 'text-emerald-600 bg-emerald-50' : 'text-gray-300 hover:text-emerald-400'
+                              }`}
+                              title="Include (Emerald/Circle)"
+                            >
                               <CircleDot size={16}/>
                             </button>
-                            <button onClick={() => toggleFilter(state.code, -1)} className={`p-1 rounded ${filterState === -1 ? 'text-red-500 bg-red-50' : 'text-gray-300 hover:text-red-400'}`}>
+                            <button 
+                              onClick={() => toggleFilter(state.code, -1)} 
+                              className={`p-1 rounded ${
+                                filterState === -1 ? 'text-red-500 bg-red-50' : 'text-gray-300 hover:text-red-400'
+                              }`}
+                              title="Exclude (Red/Minus)"
+                            >
                               <MinusCircle size={16}/>
                             </button>
                           </div>
@@ -345,6 +413,7 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
                 </div>
               </section>
 
+              {/* Lifestyle Categories (Tri-State Filtering) */}
               {[
                 { name: 'Leisure & Sport', items: ['Golf', 'Tennis', 'Pickleball', 'Skiing', 'National Parks', 'Beach', 'Lake', 'Mountain'] },
                 { 
@@ -368,10 +437,22 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
                             {item}
                           </span>
                           <div className="flex gap-1">
-                            <button onClick={() => toggleFilter(item, 1)} className={`p-1 rounded ${filterState === 1 ? 'text-emerald-600 bg-emerald-50' : 'text-gray-300 hover:text-emerald-400'}`}>
+                            <button 
+                              onClick={() => toggleFilter(item, 1)} 
+                              className={`p-1 rounded ${
+                                filterState === 1 ? 'text-emerald-600 bg-emerald-50' : 'text-gray-300 hover:text-emerald-400'
+                              }`}
+                              title="Include (Emerald/Circle)"
+                            >
                               <CircleDot size={16}/>
                             </button>
-                            <button onClick={() => toggleFilter(item, -1)} className={`p-1 rounded ${filterState === -1 ? 'text-red-500 bg-red-50' : 'text-gray-300 hover:text-red-400'}`}>
+                            <button 
+                              onClick={() => toggleFilter(item, -1)} 
+                              className={`p-1 rounded ${
+                                filterState === -1 ? 'text-red-500 bg-red-50' : 'text-gray-300 hover:text-red-400'
+                              }`}
+                              title="Exclude (Red/Minus)"
+                            >
                               <MinusCircle size={16}/>
                             </button>
                           </div>
@@ -385,20 +466,21 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
           </div>
         </aside>
 
+          {/* MAIN CONTENT */}
           <main className="col-span-9 space-y-8">
           <div className="grid grid-cols-2 gap-8">
             <div className="bg-white rounded-2xl border border-[#D1D5DC] p-8 shadow-sm">
-                <h3 className="text-sm font-bold text-[#45556C] mb-4">Projected Compliance</h3>
-                <div className="space-y-4">
-                  {creditProgress.map((s:any) => (
-                    <div key={s.code}>
-                      <div className="flex justify-between text-xs font-bold mb-1"><span>{s.name}</span> <span>{s.projected}/{s.required} hrs</span></div>
-                      <div className="h-2 bg-[#F1F5F9] rounded-full overflow-hidden border border-gray-100">
-                        <div className="h-full bg-[#155DFC] transition-all duration-700" style={{width: `${Math.min((s.projected/s.required)*100, 100)}%`}}/>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+               <h3 className="text-sm font-bold text-[#45556C] mb-4">Projected Compliance</h3>
+               <div className="space-y-4">
+                 {creditProgress.map((s:any) => (
+                   <div key={s.code}>
+                     <div className="flex justify-between text-xs font-bold mb-1"><span>{s.name}</span> <span>{s.projected}/{s.required} hrs</span></div>
+                     <div className="h-2 bg-[#F1F5F9] rounded-full overflow-hidden border border-gray-100">
+                       <div className="h-full bg-[#155DFC] transition-all duration-700" style={{width: `${Math.min((s.projected/s.required)*100, 100)}%`}}/>
+                     </div>
+                   </div>
+                 ))}
+               </div>
             </div>
             
             <div className="bg-white rounded-2xl border border-[#45556C] p-8 text-[#0A0A0A] flex flex-col justify-center shadow-sm">
@@ -407,6 +489,7 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
             </div>
           </div>
 
+          {/* COURSE CARDS */}
           <div className="grid grid-cols-2 gap-6">
             {filteredCourses.map(course => {
               const isPlanned = plannedIds.includes(course.id);
