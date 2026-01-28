@@ -1,7 +1,6 @@
 /**
- * Cursor Agent Patch #CS129.1 - Fix Rescue Plan Navigation
+ * Cursor Agent Patch #128 - Interactive Credit Buckets
  * Path: /home/myunix/projects/mycertiq_gemini/frontend/src/components/CMEStatus.tsx
- * Execution Mode: Atomic Update
  */
 
 import React, { useState, useEffect } from 'react';
@@ -22,24 +21,32 @@ export const CMEStatus = ({ statusData }: any) => {
 
   // Professional Navigation Handler
   const handleBucketClick = (category: string, stateName: string) => {
-    navigate(`/cme-planner?category=${category}&state=${stateName}`);
+    // Navigate to planner with pre-filled filters
+    navigate(`/planner?category=${category}&state=${stateName}`);
   };
 
   const BRAND_BLUE = '#155DFC'; 
 
   return (
     <div className="bg-white min-h-screen font-sans text-[#101828]">
+      {/* HEADER REMAINS AS SHOWN IN SUCCESSFUL SCREENSHOT */}
+   
+   
       <nav className="w-full h-16 bg-white border-b border-[#E2E8F0] px-8 flex items-center justify-between sticky top-0 z-[100]">
         <div className="flex items-center gap-8 h-full">
-          <button className="h-full flex items-center pt-1 text-sm font-bold text-[#155DFC] border-b-2 border-[#155DFC] cursor-default">
+          <button 
+            className="h-full flex items-center pt-1 text-sm font-bold text-[#155DFC] border-b-2 border-[#155DFC] cursor-default"
+          >
             CME Status
           </button>
+          
           <button 
             onClick={() => navigate('/cme-preferences')} 
             className="h-full flex items-center pt-1 text-sm font-bold text-[#64748B] border-b-2 border-transparent hover:text-[#155DFC] transition-all"
           >
             CME Preferences
           </button>
+          
           <button 
             onClick={() => navigate('/cme-planner')} 
             className="h-full flex items-center pt-1 text-sm font-bold text-[#64748B] border-b-2 border-transparent hover:text-[#155DFC] transition-all"
@@ -47,6 +54,7 @@ export const CMEStatus = ({ statusData }: any) => {
             CME Planner
           </button>
         </div>
+
         <div className="flex items-center gap-3">
           <span className="text-sm font-bold text-[#334155]">Dr. Priya Verma</span>
           <button 
@@ -59,6 +67,7 @@ export const CMEStatus = ({ statusData }: any) => {
       </nav> 
 
       <div className="max-w-6xl mx-auto py-12 px-6 space-y-10">
+        {/* ACTION BANNER REMAINS AS SHOWN IN SUCCESSFUL SCREENSHOT */}
         <div className="bg-[#FFF5F5] border border-[#FEE2E2] rounded-[40px] p-10 flex justify-between items-center">
           <div className="flex items-center gap-6">
             <div className="bg-white p-5 rounded-3xl shadow-sm text-[#E11D48]">
@@ -71,20 +80,11 @@ export const CMEStatus = ({ statusData }: any) => {
           </div>
           
           <button 
-            onClick={() => navigate('/cme-planner?state=Florida&rescue=true')}
+            style={{ backgroundColor: BRAND_BLUE, color: 'white', borderRadius: '9999px', padding: '16px 36px', fontWeight: '900', border: 'none' }}
             className="flex items-center gap-3 shadow-lg hover:brightness-110 transition-all active:scale-95"
-            style={{ 
-              backgroundColor: BRAND_BLUE, 
-              color: 'white', 
-              borderRadius: '9999px', 
-              padding: '16px 36px', 
-              fontWeight: '900', 
-              border: 'none',
-              cursor: 'pointer'
-            }}
           >
-            <Zap size={20} fill="white" />
-            Launch CME Planner
+            <Zap size={20} fill="currentColor" />
+            Launch Rescue Plan
           </button>
         </div>
 
@@ -108,7 +108,11 @@ export const CMEStatus = ({ statusData }: any) => {
               </div>
 
               <div className="grid grid-cols-2 gap-16">
-                <div onClick={() => handleBucketClick('Mandatory', state.name)} className="space-y-4 cursor-pointer group">
+                {/* INTERACTIVE BUCKET: Mandatory */}
+                <div 
+                  onClick={() => handleBucketClick('Mandatory', state.name)}
+                  className="space-y-4 cursor-pointer group"
+                >
                   <div className="flex justify-between items-end">
                     <span className="text-xs font-black text-[#101828] uppercase group-hover:text-[#155DFC] transition-colors">Mandatory (Errors/HIV)</span>
                     <span className="text-sm font-bold text-[#0D9488]">3 / 5 hrs</span>
@@ -118,7 +122,11 @@ export const CMEStatus = ({ statusData }: any) => {
                   </div>
                 </div>
 
-                <div onClick={() => handleBucketClick('General', state.name)} className="space-y-4 cursor-pointer group">
+                {/* INTERACTIVE BUCKET: General */}
+                <div 
+                  onClick={() => handleBucketClick('General', state.name)}
+                  className="space-y-4 cursor-pointer group"
+                >
                   <div className="flex justify-between items-end">
                     <span className="text-xs font-black text-[#101828] uppercase group-hover:text-[#155DFC] transition-colors">General Electives</span>
                     <span className="text-sm font-bold text-[#894B00]">35 / 35 hrs</span>
@@ -136,4 +144,4 @@ export const CMEStatus = ({ statusData }: any) => {
   );
 };
 
-// End of Patch #CS129.1
+// End of Patch #128

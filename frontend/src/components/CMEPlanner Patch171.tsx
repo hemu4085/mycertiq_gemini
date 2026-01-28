@@ -1,14 +1,14 @@
 /**
- * CME Planner - Patch #172
+ * CME Planner - Patch #171
  * Execution Mode: Manual Edit
  * Path: /home/myunix/projects/mycertiq_gemini/frontend/src/components/CMEPlanner.tsx
- * Status: Implemented active Time Period filtering and updated "Add/Added" button labels.
+ * Status: Added date inputs for Specific Dates, expanded course samples, and added nearby hotel links with mileage.
  */
 
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  Calendar, MapPin, Check, 
+  Calendar, MapPin, Plus, Check, 
   CircleDot, MinusCircle, User,
   ExternalLink, Search, X, Hotel
 } from 'lucide-react';
@@ -80,31 +80,7 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
   ], []);
 
   const filteredCourses = useMemo(() => {
-    // Current date reference for filtering (Jan 28, 2026)
-    const today = new Date('2026-01-28');
-
     return allCourses.filter(course => {
-      // 1. Time Filter logic
-      const courseDate = new Date(course.date);
-      
-      if (period === '3 Month') {
-        const limit = new Date(today);
-        limit.setMonth(today.getMonth() + 3);
-        if (courseDate < today || courseDate > limit) return false;
-      } else if (period === '6 Month') {
-        const limit = new Date(today);
-        limit.setMonth(today.getMonth() + 6);
-        if (courseDate < today || courseDate > limit) return false;
-      } else if (period === '12 Month') {
-        const limit = new Date(today);
-        limit.setMonth(today.getMonth() + 12);
-        if (courseDate < today || courseDate > limit) return false;
-      } else if (period === 'Specific Date') {
-        if (startDate && courseDate < new Date(startDate)) return false;
-        if (endDate && courseDate > new Date(endDate)) return false;
-      }
-
-      // 2. Existing Filter Logic (Scoped to exclude/include)
       const scopeStateApproved = activeFilters['State Approved'];
       const scopeWellness = activeFilters['General Wellness'];
       if (scopeStateApproved === -1 && !course.isWellness) return false;
@@ -113,6 +89,7 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
       const excludedKeys = Object.entries(activeFilters).filter(([_, v]) => v === -1).map(([k]) => k);
       if (excludedKeys.includes(course.stateCode)) return false;
       if (course.tags.some(tag => excludedKeys.includes(tag))) return false;
+      
       if (course.approvedStates.some(st => excludedKeys.includes(`LIC_${st}`))) return false;
 
       const includedKeys = Object.entries(activeFilters).filter(([_, v]) => v === 1).map(([k]) => k);
@@ -130,7 +107,7 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
       }
       return true;
     });
-  }, [activeFilters, allCourses, period, startDate, endDate]);
+  }, [activeFilters, allCourses]);
 
   const toggleFilter = (key: string, type: 1 | -1) => {
     setActiveFilters(prev => {
@@ -328,19 +305,8 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
                       <a href={course.officialListing} target="_blank" rel="noreferrer" className="text-lg font-black text-slate-900 hover:text-[#155DFC] leading-tight group">
                         {course.title} <ExternalLink size={14} className="inline opacity-0 group-hover:opacity-100 transition-opacity" />
                       </a>
-                      <button 
-                        onClick={() => toggleCourse(course.id)} 
-                        className={`px-4 py-1.5 rounded-lg text-xs font-black transition-all border ${
-                          plannedIds.includes(course.id) 
-                          ? 'bg-emerald-500 border-emerald-500 text-white' 
-                          : 'bg-white border-[#155DFC] text-[#155DFC] hover:bg-blue-50'
-                        }`}
-                      >
-                        {plannedIds.includes(course.id) ? (
-                          <span className="flex items-center gap-1"><Check size={14}/> Added</span>
-                        ) : (
-                          "Add"
-                        )}
+                      <button onClick={() => toggleCourse(course.id)} className={`p-2 rounded-full transition-colors ${plannedIds.includes(course.id) ? 'bg-emerald-100 text-emerald-600' : 'bg-blue-50 text-blue-600 hover:bg-blue-100'}`}>
+                        {plannedIds.includes(course.id) ? <Check size={20} /> : <Plus size={20} />}
                       </button>
                     </div>
                     <div className="flex flex-wrap gap-2 mb-3">
@@ -397,4 +363,4 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
   );
 };
 
-// End of Patch #172
+// End of Patch #171
