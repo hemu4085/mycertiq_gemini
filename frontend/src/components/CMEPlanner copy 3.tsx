@@ -1,9 +1,9 @@
 /**
- * CME Planner Concierge Grid Implementation (v1.3.0)
+ * CME Planner Concierge Grid Implementation (v1.2.9)
  * Execution Mode: Manual Edit
  * Path: /home/myunix/projects/mycertiq_gemini/frontend/src/components/CMEPlanner.tsx
- * Update: Compliance Overview now dynamically adds "Added" course credits to the state totals.
- * Constraints: Filters, state lists, and 20 sample data items preserved from Patch #165.
+ * Update: Replaced "+" icon with "Add" text and toggled state to "Added" upon selection.
+ * Constraints: Filters, state lists, and sample data preserved in their entirety.
  */
 
 import React, { useState, useMemo } from 'react';
@@ -208,22 +208,6 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
     return allCourses.filter(c => plannedIds.includes(c.id)).reduce((sum, c) => sum + (c.boards[0]?.credits || 0), 0);
   }, [plannedIds, allCourses]);
 
-  // CALCULATION FOR STATE-SPECIFIC PROJECTED TOTALS
-  const stateComplianceWithPlanned = useMemo(() => {
-    const plannedCourses = allCourses.filter(c => plannedIds.includes(c.id));
-    
-    return DEFAULT_CME_STATUS.states.map(state => {
-      const addedCredits = plannedCourses
-        .filter(c => c.approvedStates.includes(state.code))
-        .reduce((sum, c) => sum + (c.boards[0]?.credits || 0), 0);
-      
-      return {
-        ...state,
-        projected: state.current + addedCredits
-      };
-    });
-  }, [plannedIds, allCourses]);
-
   return (
     <div className="min-h-screen bg-[#F8FAFC] font-sans text-[#0A0A0A]">
       <nav className="w-full h-16 bg-white border-b border-[#E2E8F0] px-8 flex items-center justify-between sticky top-0 z-[100]">
@@ -373,15 +357,10 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
               <div className="bg-white rounded-2xl border border-[#D1D5DC] p-8 shadow-sm">
                 <h3 className="text-sm font-bold text-[#45556C] mb-4 uppercase tracking-widest">Compliance Overview</h3>
                 <div className="space-y-3">
-                  {stateComplianceWithPlanned.map(s => (
+                  {DEFAULT_CME_STATUS.states.map(s => (
                     <div key={s.code} className="flex justify-between items-center bg-[#F8FAFC] p-3 rounded-lg border border-[#E2E8F0]">
                       <span className="font-bold text-slate-700">{s.name}</span>
-                      <div className="flex items-center gap-2">
-                         <span className={`text-xs font-bold ${s.projected > s.current ? 'text-emerald-600' : 'text-slate-400'}`}>
-                           {s.current} {s.projected > s.current && `→ ${s.projected}`}
-                         </span>
-                         <span className="text-blue-600 font-black">/ {s.required} hrs</span>
-                      </div>
+                      <span className="text-blue-600 font-black">{s.current}/{s.required} hrs</span>
                     </div>
                   ))}
                 </div>
@@ -462,4 +441,4 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
   );
 };
 
-// End of Patch #166
+// End of Patch #164
