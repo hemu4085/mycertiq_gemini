@@ -1,5 +1,5 @@
 /**
- * Cursor Agent Patch #CP180 - Add Specific Date range inputs
+ * Cursor Agent Patch #CP174 - Adding Lifestyle Filter Groups
  * Execution Mode: Atomic Update
  * Path: /home/myunix/projects/mycertiq_gemini/frontend/src/components/CMEPlanner.tsx
  */
@@ -7,7 +7,7 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  Calendar, MapPin, Check, Plane,
+  Calendar, MapPin, Check, 
   CircleDot, MinusCircle, User,
   ExternalLink, Search, X, Hotel
 } from 'lucide-react';
@@ -62,13 +62,20 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
   }, [stateSearch]);
 
   const allCourses = useMemo(() => [
-    { id: 1, title: "Cardiovascular Medicine: Interventional Mastery", officialListing: "#", dateRange: "Mar 12-16, 2026", date: "2026-03-12", dateEnd: "2026-03-16", location: { name: "Maui, HI", link: "#", airport: { name: "OGG", link: "#", dist: "15 mi" }, directFlight: true }, approvedStates: ['FL', 'MA', 'HI'], stateCode: "HI", boards: [{ name: "ABIM", credits: 15, link: "#" }], hotels: [{ name: "Grand Wailea", link: "#", isOfficial: true }], nearbyHotels: [{name: "Four Seasons Maui", dist: "0.4 mi", link: "#"}, {name: "Andaz Maui", dist: "1.2 mi", link: "#"}, {name: "Hotel Wailea", dist: "2.5 mi", link: "#"}], registrationLink: "#", tags: ['Beach', 'Luxury Resort', 'Direct Flights', 'General Electives'], isWellness: false },
-    { id: 2, title: "Pediatric Emergency Medicine Summit", officialListing: "#", dateRange: "Apr 5-8, 2026", date: "2026-04-05", dateEnd: "2026-04-08", location: { name: "Orlando, FL", link: "#", airport: { name: "MCO", link: "#", dist: "12 mi" }, directFlight: true }, approvedStates: ['FL', 'GA', 'TX'], stateCode: "FL", boards: [{ name: "ABP", credits: 18, link: "#" }], hotels: [{ name: "Disney Yacht Club", link: "#", isOfficial: true }], nearbyHotels: [{name: "Swan Reserve", dist: "0.8 mi", link: "#"}, {name: "Wyndham Grand", dist: "2.1 mi", link: "#"}, {name: "Waldorf Astoria", dist: "3.4 mi", link: "#"}], registrationLink: "#", tags: ['Family & Fun', 'Theme Parks', 'General Electives'], isWellness: false },
-    { id: 11, title: "Florida Medical Errors & HIV Update", officialListing: "#", dateRange: "Apr 10, 2026", date: "2026-04-10", dateEnd: "2026-04-10", location: { name: "Miami, FL", link: "#", airport: { name: "MIA", link: "#", dist: "8 mi" }, directFlight: true }, approvedStates: ['FL'], stateCode: "FL", boards: [{ name: "General CME", credits: 5, link: "#" }], hotels: [], nearbyHotels: [], registrationLink: "#", tags: ['Mandatory (Errors/HIV)', 'Driving Distance'], isWellness: false },
-    { id: 3, title: "Neurology Update & Stroke Management", officialListing: "#", dateRange: "May 10-14, 2026", date: "2026-05-10", dateEnd: "2026-05-14", location: { name: "Boston, MA", link: "#", airport: { name: "BOS", link: "#", dist: "4 mi" }, directFlight: true }, approvedStates: ['MA', 'NY', 'CT'], stateCode: "MA", boards: [{ name: "ABPN", credits: 20, link: "#" }], hotels: [{ name: "The Liberty Hotel", link: "#", isOfficial: true }], nearbyHotels: [{name: "The Whitney", dist: "0.3 mi", link: "#"}, {name: "Wyndham Beacon Hill", dist: "0.5 mi", link: "#"}, {name: "XV Beacon", dist: "0.9 mi", link: "#"}], registrationLink: "#", tags: ['Big City/Arts', 'Driving Distance', 'General Electives'], isWellness: false },
-    { id: 4, title: "Alpine Sports Medicine & Orthopedic Care", officialListing: "#", dateRange: "Feb 15-20, 2026", date: "2026-02-15", dateEnd: "2026-02-20", location: { name: "Aspen, CO", link: "#", airport: { name: "ASE", link: "#", dist: "3 mi" }, directFlight: false }, approvedStates: ['CO', 'UT'], stateCode: "CO", boards: [{ name: "ABOS", credits: 22, link: "#" }], hotels: [{ name: "Little Nell", link: "#", isOfficial: true }], nearbyHotels: [{name: "St. Regis Aspen", dist: "0.2 mi", link: "#"}, {name: "Hotel Jerome", dist: "0.5 mi", link: "#"}, {name: "Limelight Hotel", dist: "0.4 mi", link: "#"}], registrationLink: "#", tags: ['Skiing', 'Mountain', 'General Electives'], isWellness: false },
-    { id: 6, title: "Mindfulness & Physician Well-being Retreat", officialListing: "#", dateRange: "Sept 12-15, 2026", date: "2026-09-12", dateEnd: "2026-09-15", location: { name: "Sedona, AZ", link: "#", airport: { name: "PHX", link: "#", dist: "115 mi" }, directFlight: true }, approvedStates: [], stateCode: "AZ", boards: [{ name: "General CME", credits: 12, link: "#" }], hotels: [{ name: "Enchantment Resort", link: "#", isOfficial: true }], nearbyHotels: [{name: "Mii Amo", dist: "0.1 mi", link: "#"}, {name: "Amara Resort", dist: "5.2 mi", link: "#"}, {name: "Sky Rock Sedona", dist: "4.8 mi", link: "#"}], registrationLink: "#", tags: ['Yoga/Retreat', 'General Wellness'], isWellness: true },
-    { id: 9, title: "Primary Care Golf & Clinical Update", officialListing: "#", dateRange: "Nov 4-7, 2026", date: "2026-11-04", dateEnd: "2026-11-07", location: { name: "Scottsdale, AZ", link: "#", airport: { name: "PHX", link: "#", dist: "20 mi" }, directFlight: true }, approvedStates: ['AZ', 'TX'], stateCode: "AZ", boards: [{ name: "ABFM", credits: 15, link: "#" }], hotels: [{ name: "TPC Scottsdale Resort", link: "#", isOfficial: true }], nearbyHotels: [{name: "Fairmont Scottsdale", dist: "0.2 mi", link: "#"}, {name: "Westin Kierland", dist: "2.5 mi", link: "#"}, {name: "Hyatt Regency Gainey", dist: "4.1 mi", link: "#"}], registrationLink: "#", tags: ['Golf', 'General Electives'], isWellness: false }
+    { id: 1, title: "Cardiovascular Medicine: Interventional Mastery", officialListing: "#", dateRange: "Mar 12-16, 2026", date: "2026-03-12", dateEnd: "2026-03-16", location: { name: "Maui, HI", link: "#", airport: { name: "OGG", link: "#" }, directFlight: true }, approvedStates: ['FL', 'MA', 'HI'], stateCode: "HI", boards: [{ name: "ABIM", credits: 15, link: "#" }], hotels: [{ name: "Grand Wailea", link: "#", isOfficial: true }], nearbyHotels: [{name: "Four Seasons Maui", dist: "0.4 mi", link: "#"}, {name: "Andaz Maui", dist: "1.2 mi", link: "#"}, {name: "Hotel Wailea", dist: "2.5 mi", link: "#"}], registrationLink: "#", tags: ['Beach', 'Luxury Resort', 'Direct Flights'], isWellness: false },
+    { id: 2, title: "Pediatric Emergency Medicine Summit", officialListing: "#", dateRange: "Apr 5-8, 2026", date: "2026-04-05", dateEnd: "2026-04-08", location: { name: "Orlando, FL", link: "#", airport: { name: "MCO", link: "#" }, directFlight: true }, approvedStates: ['FL', 'GA', 'TX'], stateCode: "FL", boards: [{ name: "ABP", credits: 18, link: "#" }], hotels: [{ name: "Disney Yacht Club", link: "#", isOfficial: true }], nearbyHotels: [{name: "Swan Reserve", dist: "0.8 mi", link: "#"}, {name: "Wyndham Grand", dist: "2.1 mi", link: "#"}, {name: "Waldorf Astoria", dist: "3.4 mi", link: "#"}], registrationLink: "#", tags: ['Family & Fun', 'Theme Parks'], isWellness: false },
+    { id: 3, title: "Neurology Update & Stroke Management", officialListing: "#", dateRange: "May 10-14, 2026", date: "2026-05-10", dateEnd: "2026-05-14", location: { name: "Boston, MA", link: "#", airport: { name: "BOS", link: "#" }, directFlight: true }, approvedStates: ['MA', 'NY', 'CT'], stateCode: "MA", boards: [{ name: "ABPN", credits: 20, link: "#" }], hotels: [{ name: "The Liberty Hotel", link: "#", isOfficial: true }], nearbyHotels: [{name: "The Whitney", dist: "0.3 mi", link: "#"}, {name: "Wyndham Beacon Hill", dist: "0.5 mi", link: "#"}, {name: "XV Beacon", dist: "0.9 mi", link: "#"}], registrationLink: "#", tags: ['Big City/Arts', 'Driving Distance'], isWellness: false },
+    { id: 4, title: "Alpine Sports Medicine & Orthopedic Care", officialListing: "#", dateRange: "Feb 15-20, 2026", date: "2026-02-15", dateEnd: "2026-02-20", location: { name: "Aspen, CO", link: "#", airport: { name: "ASE", link: "#" }, directFlight: false }, approvedStates: ['CO', 'UT'], stateCode: "CO", boards: [{ name: "ABOS", credits: 22, link: "#" }], hotels: [{ name: "Little Nell", link: "#", isOfficial: true }], nearbyHotels: [{name: "St. Regis Aspen", dist: "0.2 mi", link: "#"}, {name: "Hotel Jerome", dist: "0.5 mi", link: "#"}, {name: "Limelight Hotel", dist: "0.4 mi", link: "#"}], registrationLink: "#", tags: ['Skiing', 'Mountain'], isWellness: false },
+    { id: 5, title: "Radiology: Advanced Imaging Techniques", officialListing: "#", dateRange: "June 2-5, 2026", date: "2026-06-02", dateEnd: "2026-06-05", location: { name: "San Diego, CA", link: "#", airport: { name: "SAN", link: "#" }, directFlight: true }, approvedStates: ['CA', 'AZ'], stateCode: "CA", boards: [{ name: "ABR", credits: 16, link: "#" }], hotels: [{ name: "Hotel Del Coronado", link: "#", isOfficial: true }], nearbyHotels: [{name: "Glorietta Bay Inn", dist: "0.2 mi", link: "#"}, {name: "Shore House", dist: "0.1 mi", link: "#"}, {name: "Loews Coronado", dist: "4.2 mi", link: "#"}], registrationLink: "#", tags: ['Beach', 'Driving Distance'], isWellness: false },
+    { id: 21, title: "Emergency Medicine Rapid Review", officialListing: "#", dateRange: "Feb 22-25, 2026", date: "2026-02-22", dateEnd: "2026-02-25", location: { name: "Miami, FL", link: "#", airport: { name: "MIA", link: "#" }, directFlight: true }, approvedStates: ['FL'], stateCode: "FL", boards: [{ name: "ABEM", credits: 12, link: "#" }], hotels: [{ name: "W South Beach", link: "#", isOfficial: true }], nearbyHotels: [{name: "1 Hotel South Beach", dist: "0.3 mi", link: "#"}, {name: "The Setai", dist: "0.2 mi", link: "#"}, {name: "Aloft Miami", dist: "1.5 mi", link: "#"}], registrationLink: "#", tags: ['Beach', 'Big City/Arts'], isWellness: false },
+    { id: 22, title: "Critical Care Nursing Excellence", officialListing: "#", dateRange: "Mar 5-7, 2026", date: "2026-03-05", dateEnd: "2026-03-07", location: { name: "Atlanta, GA", link: "#", airport: { name: "ATL", link: "#" }, directFlight: true }, approvedStates: ['GA', 'FL'], stateCode: "GA", boards: [{ name: "General CME", credits: 10, link: "#" }], hotels: [{ name: "Hyatt Regency", link: "#", isOfficial: true }], nearbyHotels: [{name: "Marriott Marquis", dist: "0.1 mi", link: "#"}, {name: "Hilton Atlanta", dist: "0.2 mi", link: "#"}, {name: "Hotel Indigo", dist: "0.5 mi", link: "#"}], registrationLink: "#", tags: ['Big City/Arts', 'Driving Distance'], isWellness: false },
+    { id: 23, title: "Dermatopathology Winter Intensive", officialListing: "#", dateRange: "Feb 2-6, 2026", date: "2026-02-02", dateEnd: "2026-02-06", location: { name: "Park City, UT", link: "#", airport: { name: "SLC", link: "#" }, directFlight: true }, approvedStates: ['UT', 'CO'], stateCode: "UT", boards: [{ name: "ABD", credits: 24, link: "#" }], hotels: [{ name: "Stein Eriksen Lodge", link: "#", isOfficial: true }], nearbyHotels: [{name: "The Chateaux", dist: "0.1 mi", link: "#"}, {name: "Goldener Hirsch", dist: "0.3 mi", link: "#"}, {name: "Silver King", dist: "1.8 mi", link: "#"}], registrationLink: "#", tags: ['Skiing', 'Mountain'], isWellness: false },
+    { id: 24, title: "Hematology Highlights", officialListing: "#", dateRange: "July 12-15, 2026", date: "2026-07-12", dateEnd: "2026-07-15", location: { name: "Seattle, WA", link: "#", airport: { name: "SEA", link: "#" }, directFlight: true }, approvedStates: ['WA'], stateCode: "WA", boards: [{ name: "ABIM", credits: 14, link: "#" }], hotels: [{ name: "Fairmont Olympic", link: "#", isOfficial: true }], nearbyHotels: [{name: "Hotel Monaco", dist: "0.2 mi", link: "#"}, {name: "Kimpton Palladian", dist: "0.6 mi", link: "#"}, {name: "State Hotel", dist: "0.4 mi", link: "#"}], registrationLink: "#", tags: ['Big City/Arts'], isWellness: false },
+    { id: 6, title: "Mindfulness & Physician Well-being Retreat", officialListing: "#", dateRange: "Sept 12-15, 2026", date: "2026-09-12", dateEnd: "2026-09-15", location: { name: "Sedona, AZ", link: "#", airport: { name: "PHX", link: "#" }, directFlight: true }, approvedStates: [], stateCode: "AZ", boards: [{ name: "General CME", credits: 12, link: "#" }], hotels: [{ name: "Enchantment Resort", link: "#", isOfficial: true }], nearbyHotels: [{name: "Mii Amo", dist: "0.1 mi", link: "#"}, {name: "Amara Resort", dist: "5.2 mi", link: "#"}, {name: "Sky Rock Sedona", dist: "4.8 mi", link: "#"}], registrationLink: "#", tags: ['Yoga/Retreat'], isWellness: true },
+    { id: 7, title: "Internal Medicine Board Review", officialListing: "#", dateRange: "July 20-25, 2026", date: "2026-07-20", dateEnd: "2026-07-25", location: { name: "Chicago, IL", link: "#", airport: { name: "ORD", link: "#" }, directFlight: true }, approvedStates: ['IL', 'IN', 'WI'], stateCode: "IL", boards: [{ name: "ABIM", credits: 30, link: "#" }], hotels: [{ name: "The Drake", link: "#", isOfficial: true }], nearbyHotels: [{name: "The Westin", dist: "0.3 mi", link: "#"}, {name: "The Viceroy", dist: "0.5 mi", link: "#"}, {name: "Waldorf Astoria", dist: "0.6 mi", link: "#"}], registrationLink: "#", tags: ['Big City/Arts', 'One-Stop Flights'], isWellness: false },
+    { id: 8, title: "Dermatology: Clinical Pearls & Aesthetics", officialListing: "#", dateRange: "Oct 8-11, 2026", date: "2026-10-08", dateEnd: "2026-10-11", location: { name: "Las Vegas, NV", link: "#", airport: { name: "LAS", link: "#" }, directFlight: true }, approvedStates: ['NV', 'CA'], stateCode: "NV", boards: [{ name: "ABD", credits: 14, link: "#" }], hotels: [{ name: "Bellagio", link: "#", isOfficial: true }], nearbyHotels: [{name: "Caesars Palace", dist: "0.3 mi", link: "#"}, {name: "The Cosmopolitan", dist: "0.2 mi", link: "#"}, {name: "Vdara", dist: "0.4 mi", link: "#"}], registrationLink: "#", tags: ['Just for Fun', 'Big City/Arts'], isWellness: false },
+    { id: 9, title: "Primary Care Golf & Clinical Update", officialListing: "#", dateRange: "Nov 4-7, 2026", date: "2026-11-04", dateEnd: "2026-11-07", location: { name: "Scottsdale, AZ", link: "#", airport: { name: "PHX", link: "#" }, directFlight: true }, approvedStates: ['AZ', 'TX'], stateCode: "AZ", boards: [{ name: "ABFM", credits: 15, link: "#" }], hotels: [{ name: "TPC Scottsdale Resort", link: "#", isOfficial: true }], nearbyHotels: [{name: "Fairmont Scottsdale", dist: "0.2 mi", link: "#"}, {name: "Westin Kierland", dist: "2.5 mi", link: "#"}, {name: "Hyatt Regency Gainey", dist: "4.1 mi", link: "#"}], registrationLink: "#", tags: ['Golf'], isWellness: false },
+    { id: 10, title: "Oncology: Precision Medicine Symposium", officialListing: "#", dateRange: "Dec 1-4, 2026", date: "2026-12-01", dateEnd: "2026-12-04", location: { name: "New York, NY", link: "#", airport: { name: "JFK", link: "#" }, directFlight: true }, approvedStates: ['NY', 'NJ', 'PA'], stateCode: "NY", boards: [{ name: "ABIM", credits: 18, link: "#" }], hotels: [{ name: "Marriott Marquis", link: "#", isOfficial: true }], nearbyHotels: [{name: "The Knickerbocker", dist: "0.2 mi", link: "#"}, {name: "The Westin Times Square", dist: "0.1 mi", link: "#"}, {name: "Edition New York", dist: "0.3 mi", link: "#"}], registrationLink: "#", tags: ['Big City/Arts', 'International'], isWellness: false }
   ], []);
 
   const filteredCourses = useMemo(() => {
@@ -96,16 +103,8 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
 
       const scopeStateApproved = activeFilters['State Approved'];
       const scopeWellness = activeFilters['General Wellness'];
-      const scopeMandatory = activeFilters['Mandatory (Errors/HIV)'];
-      const scopeElectives = activeFilters['General Electives'];
-
       if (scopeStateApproved === -1 && !course.isWellness) return false;
-      if (scopeWellness === 1 && !course.tags.includes('General Wellness')) return false;
-      if (scopeWellness === -1 && course.tags.includes('General Wellness')) return false;
-      if (scopeMandatory === 1 && !course.tags.includes('Mandatory (Errors/HIV)')) return false;
-      if (scopeMandatory === -1 && course.tags.includes('Mandatory (Errors/HIV)')) return false;
-      if (scopeElectives === 1 && !course.tags.includes('General Electives')) return false;
-      if (scopeElectives === -1 && course.tags.includes('General Electives')) return false;
+      if (scopeWellness === -1 && course.isWellness) return false;
 
       const excludedKeys = Object.entries(activeFilters).filter(([_, v]) => v === -1).map(([k]) => k);
       if (excludedKeys.includes(course.stateCode)) return false;
@@ -113,11 +112,7 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
       if (course.approvedStates.some(st => excludedKeys.includes(`LIC_${st}`))) return false;
 
       const includedKeys = Object.entries(activeFilters).filter(([_, v]) => v === 1).map(([k]) => k);
-      const lifestyleInclusions = includedKeys.filter(k => 
-        k !== 'State Approved' && k !== 'General Wellness' && 
-        k !== 'Mandatory (Errors/HIV)' && k !== 'General Electives' && 
-        !k.startsWith('LIC_')
-      );
+      const lifestyleInclusions = includedKeys.filter(k => k !== 'State Approved' && k !== 'General Wellness' && !k.startsWith('LIC_'));
       const licenseInclusions = includedKeys.filter(k => k.startsWith('LIC_')).map(k => k.replace('LIC_', ''));
 
       if (licenseInclusions.length > 0) {
@@ -155,27 +150,10 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
 
   const stateComplianceWithPlanned = useMemo(() => {
     const plannedCourses = allCourses.filter(c => plannedIds.includes(c.id));
-    
-    const stateData = cmeStatus.states.map((state: any) => {
+    return cmeStatus.states.map((state: any) => {
       const addedCredits = plannedCourses.filter(c => c.approvedStates.includes(state.code)).reduce((sum, c) => sum + (c.boards[0]?.credits || 0), 0);
       return { ...state, projected: state.current + addedCredits };
     });
-
-    const totalCurrent = cmeStatus.states.reduce((sum: number, s: any) => sum + s.current, 0);
-    const totalRequired = cmeStatus.states.reduce((sum: number, s: any) => sum + s.required, 0);
-    const totalAdded = plannedCourses.reduce((sum, c) => sum + (c.boards[0]?.credits || 0), 0);
-
-    return [
-      ...stateData,
-      { 
-        name: "Total Elective Progress", 
-        code: "TOTAL", 
-        current: totalCurrent, 
-        projected: totalCurrent + totalAdded, 
-        required: totalRequired,
-        isTotal: true 
-      }
-    ];
   }, [plannedIds, allCourses, cmeStatus]);
 
   return (
@@ -215,25 +193,25 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
                       <button key={t} onClick={() => setPeriod(t)} className={`text-left px-3 py-1.5 rounded-lg text-[13px] transition-colors ${period === t ? 'bg-blue-50 text-[#155DFC] font-bold' : 'text-[#62748E] hover:bg-slate-50'}`}>{t}</button>
                     ))}
                   </div>
-
+                  
                   {period === 'Specific Date' && (
-                    <div className="grid grid-cols-2 gap-2 mt-3 animate-in fade-in slide-in-from-top-1">
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-bold text-slate-400 uppercase ml-1">Start</label>
+                    <div className="mt-4 p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-3 animate-in fade-in slide-in-from-top-2">
+                      <div>
+                        <label className="text-[10px] font-black text-slate-500 uppercase">Start Date</label>
                         <input 
                           type="date" 
                           value={startDate}
                           onChange={(e) => setStartDate(e.target.value)}
-                          className="w-full text-[11px] p-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          className="w-full text-xs p-2 border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 outline-none" 
                         />
                       </div>
-                      <div className="space-y-1">
-                        <label className="text-[10px] font-bold text-slate-400 uppercase ml-1">End</label>
+                      <div>
+                        <label className="text-[10px] font-black text-slate-500 uppercase">End Date</label>
                         <input 
                           type="date" 
                           value={endDate}
                           onChange={(e) => setEndDate(e.target.value)}
-                          className="w-full text-[11px] p-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500"
+                          className="w-full text-xs p-2 border border-slate-300 rounded focus:ring-1 focus:ring-blue-500 outline-none" 
                         />
                       </div>
                     </div>
@@ -259,7 +237,7 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
 
                 <section className="space-y-3 pt-4 border-t">
                   <h3 className="text-xs font-black text-[#45556C] uppercase tracking-widest">Credit Scope</h3>
-                  {['State Approved', 'Mandatory (Errors/HIV)', 'General Electives', 'General Wellness'].map(scope => {
+                  {['State Approved', 'General Wellness'].map(scope => {
                     const fs = activeFilters[scope] || 0;
                     return (
                       <div key={scope} className="flex items-center justify-between text-[13px]">
@@ -271,6 +249,28 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
                       </div>
                     );
                   })}
+                </section>
+
+                <section className="space-y-3 pt-4 border-t">
+                  <h3 className="text-xs font-black text-[#45556C] uppercase tracking-widest">CME Location (State)</h3>
+                  <div className="relative mb-2">
+                    <Search className="absolute left-2 top-2.5 text-slate-400" size={14} />
+                    <input type="text" placeholder="Search state..." value={stateSearch} onChange={(e) => setStateSearch(e.target.value)} className="w-full text-xs pl-8 pr-2 py-2 border border-[#E2E8F0] rounded-lg focus:outline-none focus:ring-1 focus:ring-[#155DFC]" />
+                  </div>
+                  <div className="max-h-[160px] overflow-y-auto space-y-1.5 pr-1 custom-scrollbar">
+                    {filteredStates.map(state => {
+                      const fs = activeFilters[state.code] || 0;
+                      return (
+                        <div key={state.code} className="flex items-center justify-between text-[13px]">
+                          <span className={fs === 1 ? 'text-emerald-600 font-bold' : fs === -1 ? 'text-red-400 line-through' : ''}>{state.name}</span>
+                          <div className="flex gap-1">
+                            <button onClick={() => toggleFilter(state.code, 1)} className={fs === 1 ? 'text-emerald-600' : 'text-gray-300'}><CircleDot size={16}/></button>
+                            <button onClick={() => toggleFilter(state.code, -1)} className={fs === -1 ? 'text-red-500' : 'text-gray-300'}><MinusCircle size={16}/></button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </section>
 
                 <section className="space-y-3 pt-4 border-t">
@@ -346,18 +346,13 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
                 <h3 className="text-sm font-bold text-[#45556C] mb-4 uppercase tracking-widest">Compliance Overview</h3>
                 <div className="space-y-3">
                   {stateComplianceWithPlanned.map((s: any) => (
-                    <div 
-                      key={s.code} 
-                      className={`flex justify-between items-center p-3 rounded-lg border ${
-                        s.isTotal ? 'bg-blue-50 border-blue-200' : 'bg-[#F8FAFC] border-[#E2E8F0]'
-                      }`}
-                    >
-                      <span className={`font-bold ${s.isTotal ? 'text-blue-700' : 'text-slate-700'}`}>{s.name}</span>
+                    <div key={s.code} className="flex justify-between items-center bg-[#F8FAFC] p-3 rounded-lg border border-[#E2E8F0]">
+                      <span className="font-bold text-slate-700">{s.name}</span>
                       <div className="flex items-center gap-2">
                          <span className={`text-xs font-bold ${s.projected > s.current ? 'text-emerald-600' : 'text-slate-400'}`}>
                            {s.current} {s.projected > s.current && `→ ${s.projected}`}
                          </span>
-                         <span className={`${s.isTotal ? 'text-blue-700' : 'text-blue-600'} font-black`}>/ {s.required} hrs</span>
+                         <span className="text-blue-600 font-black">/ {s.required} hrs</span>
                       </div>
                     </div>
                   ))}
@@ -397,50 +392,31 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
                         <span key={st} className="px-1.5 py-0.5 bg-emerald-100 text-emerald-700 text-[9px] font-black rounded uppercase">{st} APPROVED</span>
                       ))}
                     </div>
-                    <div className="flex flex-col gap-1 text-xs font-bold text-slate-500">
-                      <div className="flex items-center gap-4">
-                        <span className="flex items-center gap-1"><Calendar size={14}/> {course.dateRange}</span>
-                        <a href={course.location.link} className="flex items-center gap-1 text-blue-600 underline"><MapPin size={14}/> {course.location.name}</a>
-                      </div>
-                      <div className="flex items-center gap-2 mt-1">
-                        <a href={course.location.airport?.link} className="flex items-center gap-1 text-slate-400 hover:text-blue-500">
-                          <Plane size={14}/> {course.location.airport?.name} ({course.location.airport?.dist})
-                        </a>
-                        {course.location.directFlight && (
-                          <span className="flex items-center text-emerald-600 text-[10px] gap-0.5">
-                            <Plane size={10} className="rotate-45"/> Direct
-                          </span>
-                        )}
-                      </div>
+                    <div className="flex items-center gap-4 text-xs font-bold text-slate-500">
+                      <span className="flex items-center gap-1"><Calendar size={14}/> {course.dateRange}</span>
+                      <a href={course.location.link} className="flex items-center gap-1 text-blue-600 underline"><MapPin size={14}/> {course.location.name}</a>
                     </div>
                   </div>
 
                   <div className="p-5 flex-grow space-y-4">
                     <div className="flex gap-2">
                       {course.boards.map(b => (
-                        <div key={b.name} className="flex-1 flex justify-between p-2 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] text-xs font-bold">
+                        <a key={b.name} href={b.link} className="flex-1 flex justify-between p-2 rounded-lg bg-[#F8FAFC] border border-[#E2E8F0] text-xs font-bold">
                           <span className="text-slate-500">{b.name}</span>
                           <span className="text-[#155DFC]">{b.credits} Credits</span>
-                        </div>
+                        </a>
                       ))}
                     </div>
 
                     <div className="space-y-2">
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Hotels</p>
-                      {course.hotels.map(h => (
-                        <a key={h.name} href={h.link} className="flex items-center justify-between p-2.5 rounded-xl border border-blue-100 bg-blue-50/50 group hover:border-blue-300 transition-colors">
-                          <div className="flex items-center gap-2">
-                            <Hotel size={14} className="text-blue-600"/>
-                            <span className="text-xs font-bold text-blue-900">{h.name}</span>
-                          </div>
-                          <span className="text-[9px] font-black text-blue-600 uppercase">Official Venue</span>
-                        </a>
-                      ))}
-                      <div className="grid grid-cols-1 gap-1.5">
-                        {course.nearbyHotels.map(h => (
-                          <a key={h.name} href={h.link} className="flex items-center justify-between p-2 rounded-lg border border-slate-100 hover:border-slate-300 hover:bg-slate-50 transition-all">
-                            <span className="text-[11px] font-bold text-slate-700">{h.name}</span>
-                            <span className="text-[10px] text-slate-400 font-medium">{h.dist}</span>
+                      <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-wider flex items-center gap-1">
+                        <Hotel size={12} /> Nearby Hotels (Non-Associated)
+                      </h4>
+                      <div className="grid grid-cols-1 gap-2">
+                        {course.nearbyHotels?.map((hotel, idx) => (
+                          <a key={idx} href={hotel.link} className="flex justify-between items-center p-2 text-[11px] font-bold text-slate-600 bg-slate-50 border border-slate-100 rounded-lg hover:border-blue-300 hover:text-blue-600 transition-colors">
+                            <span>{hotel.name}</span>
+                            <span className="text-slate-400 font-medium">{hotel.dist}</span>
                           </a>
                         ))}
                       </div>
@@ -465,4 +441,4 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
   );
 };
 
-// End of Patch #CP180
+// End of Patch #CP174
