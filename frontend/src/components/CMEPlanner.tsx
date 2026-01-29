@@ -1,8 +1,7 @@
 /**
- * CME Planner - Patch #172
- * Execution Mode: Manual Edit
+ * Cursor Agent Patch #CP174 - Adding Lifestyle Filter Groups
+ * Execution Mode: Atomic Update
  * Path: /home/myunix/projects/mycertiq_gemini/frontend/src/components/CMEPlanner.tsx
- * Status: Implemented active Time Period filtering and updated "Add/Added" button labels.
  */
 
 import React, { useState, useMemo } from 'react';
@@ -64,7 +63,7 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
 
   const allCourses = useMemo(() => [
     { id: 1, title: "Cardiovascular Medicine: Interventional Mastery", officialListing: "#", dateRange: "Mar 12-16, 2026", date: "2026-03-12", dateEnd: "2026-03-16", location: { name: "Maui, HI", link: "#", airport: { name: "OGG", link: "#" }, directFlight: true }, approvedStates: ['FL', 'MA', 'HI'], stateCode: "HI", boards: [{ name: "ABIM", credits: 15, link: "#" }], hotels: [{ name: "Grand Wailea", link: "#", isOfficial: true }], nearbyHotels: [{name: "Four Seasons Maui", dist: "0.4 mi", link: "#"}, {name: "Andaz Maui", dist: "1.2 mi", link: "#"}, {name: "Hotel Wailea", dist: "2.5 mi", link: "#"}], registrationLink: "#", tags: ['Beach', 'Luxury Resort', 'Direct Flights'], isWellness: false },
-    { id: 2, title: "Pediatric Emergency Medicine Summit", officialListing: "#", dateRange: "Apr 5-8, 2026", date: "2026-04-05", dateEnd: "2026-04-08", location: { name: "Orlando, FL", link: "#", airport: { name: "MCO", link: "#" }, directFlight: true }, approvedStates: ['FL', 'GA', 'TX'], stateCode: "FL", boards: [{ name: "ABP", credits: 18, link: "#" }], hotels: [{ name: "Disney Yacht Club", link: "#", isOfficial: true }], nearbyHotels: [{name: "Swan Reserve", dist: "0.8 mi", link: "#"}, {name: "Wyndham Grand", dist: "2.1 mi", link: "#"}, {name: "Waldorf Astoria", dist: "3.4 mi", link: "#"}], registrationLink: "#", tags: ['Family & Fun', 'Theme Parks/Amusement'], isWellness: false },
+    { id: 2, title: "Pediatric Emergency Medicine Summit", officialListing: "#", dateRange: "Apr 5-8, 2026", date: "2026-04-05", dateEnd: "2026-04-08", location: { name: "Orlando, FL", link: "#", airport: { name: "MCO", link: "#" }, directFlight: true }, approvedStates: ['FL', 'GA', 'TX'], stateCode: "FL", boards: [{ name: "ABP", credits: 18, link: "#" }], hotels: [{ name: "Disney Yacht Club", link: "#", isOfficial: true }], nearbyHotels: [{name: "Swan Reserve", dist: "0.8 mi", link: "#"}, {name: "Wyndham Grand", dist: "2.1 mi", link: "#"}, {name: "Waldorf Astoria", dist: "3.4 mi", link: "#"}], registrationLink: "#", tags: ['Family & Fun', 'Theme Parks'], isWellness: false },
     { id: 3, title: "Neurology Update & Stroke Management", officialListing: "#", dateRange: "May 10-14, 2026", date: "2026-05-10", dateEnd: "2026-05-14", location: { name: "Boston, MA", link: "#", airport: { name: "BOS", link: "#" }, directFlight: true }, approvedStates: ['MA', 'NY', 'CT'], stateCode: "MA", boards: [{ name: "ABPN", credits: 20, link: "#" }], hotels: [{ name: "The Liberty Hotel", link: "#", isOfficial: true }], nearbyHotels: [{name: "The Whitney", dist: "0.3 mi", link: "#"}, {name: "Wyndham Beacon Hill", dist: "0.5 mi", link: "#"}, {name: "XV Beacon", dist: "0.9 mi", link: "#"}], registrationLink: "#", tags: ['Big City/Arts', 'Driving Distance'], isWellness: false },
     { id: 4, title: "Alpine Sports Medicine & Orthopedic Care", officialListing: "#", dateRange: "Feb 15-20, 2026", date: "2026-02-15", dateEnd: "2026-02-20", location: { name: "Aspen, CO", link: "#", airport: { name: "ASE", link: "#" }, directFlight: false }, approvedStates: ['CO', 'UT'], stateCode: "CO", boards: [{ name: "ABOS", credits: 22, link: "#" }], hotels: [{ name: "Little Nell", link: "#", isOfficial: true }], nearbyHotels: [{name: "St. Regis Aspen", dist: "0.2 mi", link: "#"}, {name: "Hotel Jerome", dist: "0.5 mi", link: "#"}, {name: "Limelight Hotel", dist: "0.4 mi", link: "#"}], registrationLink: "#", tags: ['Skiing', 'Mountain'], isWellness: false },
     { id: 5, title: "Radiology: Advanced Imaging Techniques", officialListing: "#", dateRange: "June 2-5, 2026", date: "2026-06-02", dateEnd: "2026-06-05", location: { name: "San Diego, CA", link: "#", airport: { name: "SAN", link: "#" }, directFlight: true }, approvedStates: ['CA', 'AZ'], stateCode: "CA", boards: [{ name: "ABR", credits: 16, link: "#" }], hotels: [{ name: "Hotel Del Coronado", link: "#", isOfficial: true }], nearbyHotels: [{name: "Glorietta Bay Inn", dist: "0.2 mi", link: "#"}, {name: "Shore House", dist: "0.1 mi", link: "#"}, {name: "Loews Coronado", dist: "4.2 mi", link: "#"}], registrationLink: "#", tags: ['Beach', 'Driving Distance'], isWellness: false },
@@ -72,19 +71,17 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
     { id: 22, title: "Critical Care Nursing Excellence", officialListing: "#", dateRange: "Mar 5-7, 2026", date: "2026-03-05", dateEnd: "2026-03-07", location: { name: "Atlanta, GA", link: "#", airport: { name: "ATL", link: "#" }, directFlight: true }, approvedStates: ['GA', 'FL'], stateCode: "GA", boards: [{ name: "General CME", credits: 10, link: "#" }], hotels: [{ name: "Hyatt Regency", link: "#", isOfficial: true }], nearbyHotels: [{name: "Marriott Marquis", dist: "0.1 mi", link: "#"}, {name: "Hilton Atlanta", dist: "0.2 mi", link: "#"}, {name: "Hotel Indigo", dist: "0.5 mi", link: "#"}], registrationLink: "#", tags: ['Big City/Arts', 'Driving Distance'], isWellness: false },
     { id: 23, title: "Dermatopathology Winter Intensive", officialListing: "#", dateRange: "Feb 2-6, 2026", date: "2026-02-02", dateEnd: "2026-02-06", location: { name: "Park City, UT", link: "#", airport: { name: "SLC", link: "#" }, directFlight: true }, approvedStates: ['UT', 'CO'], stateCode: "UT", boards: [{ name: "ABD", credits: 24, link: "#" }], hotels: [{ name: "Stein Eriksen Lodge", link: "#", isOfficial: true }], nearbyHotels: [{name: "The Chateaux", dist: "0.1 mi", link: "#"}, {name: "Goldener Hirsch", dist: "0.3 mi", link: "#"}, {name: "Silver King", dist: "1.8 mi", link: "#"}], registrationLink: "#", tags: ['Skiing', 'Mountain'], isWellness: false },
     { id: 24, title: "Hematology Highlights", officialListing: "#", dateRange: "July 12-15, 2026", date: "2026-07-12", dateEnd: "2026-07-15", location: { name: "Seattle, WA", link: "#", airport: { name: "SEA", link: "#" }, directFlight: true }, approvedStates: ['WA'], stateCode: "WA", boards: [{ name: "ABIM", credits: 14, link: "#" }], hotels: [{ name: "Fairmont Olympic", link: "#", isOfficial: true }], nearbyHotels: [{name: "Hotel Monaco", dist: "0.2 mi", link: "#"}, {name: "Kimpton Palladian", dist: "0.6 mi", link: "#"}, {name: "State Hotel", dist: "0.4 mi", link: "#"}], registrationLink: "#", tags: ['Big City/Arts'], isWellness: false },
-    { id: 6, title: "Mindfulness & Physician Well-being Retreat", officialListing: "#", dateRange: "Sept 12-15, 2026", date: "2026-09-12", dateEnd: "2026-09-15", location: { name: "Sedona, AZ", link: "#", airport: { name: "PHX", link: "#" }, directFlight: true }, approvedStates: [], stateCode: "AZ", boards: [{ name: "General CME", credits: 12, link: "#" }], hotels: [{ name: "Enchantment Resort", link: "#", isOfficial: true }], nearbyHotels: [{name: "Mii Amo", dist: "0.1 mi", link: "#"}, {name: "Amara Resort", dist: "5.2 mi", link: "#"}, {name: "Sky Rock Sedona", dist: "4.8 mi", link: "#"}], registrationLink: "#", tags: ['Yoga/Retreat', 'Relaxation Spa & Wellness'], isWellness: true },
+    { id: 6, title: "Mindfulness & Physician Well-being Retreat", officialListing: "#", dateRange: "Sept 12-15, 2026", date: "2026-09-12", dateEnd: "2026-09-15", location: { name: "Sedona, AZ", link: "#", airport: { name: "PHX", link: "#" }, directFlight: true }, approvedStates: [], stateCode: "AZ", boards: [{ name: "General CME", credits: 12, link: "#" }], hotels: [{ name: "Enchantment Resort", link: "#", isOfficial: true }], nearbyHotels: [{name: "Mii Amo", dist: "0.1 mi", link: "#"}, {name: "Amara Resort", dist: "5.2 mi", link: "#"}, {name: "Sky Rock Sedona", dist: "4.8 mi", link: "#"}], registrationLink: "#", tags: ['Yoga/Retreat'], isWellness: true },
     { id: 7, title: "Internal Medicine Board Review", officialListing: "#", dateRange: "July 20-25, 2026", date: "2026-07-20", dateEnd: "2026-07-25", location: { name: "Chicago, IL", link: "#", airport: { name: "ORD", link: "#" }, directFlight: true }, approvedStates: ['IL', 'IN', 'WI'], stateCode: "IL", boards: [{ name: "ABIM", credits: 30, link: "#" }], hotels: [{ name: "The Drake", link: "#", isOfficial: true }], nearbyHotels: [{name: "The Westin", dist: "0.3 mi", link: "#"}, {name: "The Viceroy", dist: "0.5 mi", link: "#"}, {name: "Waldorf Astoria", dist: "0.6 mi", link: "#"}], registrationLink: "#", tags: ['Big City/Arts', 'One-Stop Flights'], isWellness: false },
     { id: 8, title: "Dermatology: Clinical Pearls & Aesthetics", officialListing: "#", dateRange: "Oct 8-11, 2026", date: "2026-10-08", dateEnd: "2026-10-11", location: { name: "Las Vegas, NV", link: "#", airport: { name: "LAS", link: "#" }, directFlight: true }, approvedStates: ['NV', 'CA'], stateCode: "NV", boards: [{ name: "ABD", credits: 14, link: "#" }], hotels: [{ name: "Bellagio", link: "#", isOfficial: true }], nearbyHotels: [{name: "Caesars Palace", dist: "0.3 mi", link: "#"}, {name: "The Cosmopolitan", dist: "0.2 mi", link: "#"}, {name: "Vdara", dist: "0.4 mi", link: "#"}], registrationLink: "#", tags: ['Just for Fun', 'Big City/Arts'], isWellness: false },
-    { id: 9, title: "Primary Care Golf & Clinical Update", officialListing: "#", dateRange: "Nov 4-7, 2026", date: "2026-11-04", dateEnd: "2026-11-07", location: { name: "Scottsdale, AZ", link: "#", airport: { name: "PHX", link: "#" }, directFlight: true }, approvedStates: ['AZ', 'TX'], stateCode: "AZ", boards: [{ name: "ABFM", credits: 15, link: "#" }], hotels: [{ name: "TPC Scottsdale Resort", link: "#", isOfficial: true }], nearbyHotels: [{name: "Fairmont Scottsdale", dist: "0.2 mi", link: "#"}, {name: "Westin Kierland", dist: "2.5 mi", link: "#"}, {name: "Hyatt Regency Gainey", dist: "4.1 mi", link: "#"}], registrationLink: "#", tags: ['Golf', 'Leisure & Sport'], isWellness: false },
+    { id: 9, title: "Primary Care Golf & Clinical Update", officialListing: "#", dateRange: "Nov 4-7, 2026", date: "2026-11-04", dateEnd: "2026-11-07", location: { name: "Scottsdale, AZ", link: "#", airport: { name: "PHX", link: "#" }, directFlight: true }, approvedStates: ['AZ', 'TX'], stateCode: "AZ", boards: [{ name: "ABFM", credits: 15, link: "#" }], hotels: [{ name: "TPC Scottsdale Resort", link: "#", isOfficial: true }], nearbyHotels: [{name: "Fairmont Scottsdale", dist: "0.2 mi", link: "#"}, {name: "Westin Kierland", dist: "2.5 mi", link: "#"}, {name: "Hyatt Regency Gainey", dist: "4.1 mi", link: "#"}], registrationLink: "#", tags: ['Golf'], isWellness: false },
     { id: 10, title: "Oncology: Precision Medicine Symposium", officialListing: "#", dateRange: "Dec 1-4, 2026", date: "2026-12-01", dateEnd: "2026-12-04", location: { name: "New York, NY", link: "#", airport: { name: "JFK", link: "#" }, directFlight: true }, approvedStates: ['NY', 'NJ', 'PA'], stateCode: "NY", boards: [{ name: "ABIM", credits: 18, link: "#" }], hotels: [{ name: "Marriott Marquis", link: "#", isOfficial: true }], nearbyHotels: [{name: "The Knickerbocker", dist: "0.2 mi", link: "#"}, {name: "The Westin Times Square", dist: "0.1 mi", link: "#"}, {name: "Edition New York", dist: "0.3 mi", link: "#"}], registrationLink: "#", tags: ['Big City/Arts', 'International'], isWellness: false }
   ], []);
 
   const filteredCourses = useMemo(() => {
-    // Current date reference for filtering (Jan 28, 2026)
     const today = new Date('2026-01-28');
 
     return allCourses.filter(course => {
-      // 1. Time Filter logic
       const courseDate = new Date(course.date);
       
       if (period === '3 Month') {
@@ -104,7 +101,6 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
         if (endDate && courseDate > new Date(endDate)) return false;
       }
 
-      // 2. Existing Filter Logic (Scoped to exclude/include)
       const scopeStateApproved = activeFilters['State Approved'];
       const scopeWellness = activeFilters['General Wellness'];
       if (scopeStateApproved === -1 && !course.isWellness) return false;
@@ -292,6 +288,54 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
                     );
                   })}
                 </section>
+
+                <section className="space-y-3 pt-4 border-t">
+                  <h3 className="text-xs font-black text-[#45556C] uppercase tracking-widest">Family & Fun</h3>
+                  {['Just for Fun', 'Theme Parks', 'Resorts', 'All Inclusive', 'Cruises', 'Kids Approved', 'Teens Approved', 'Pet Approved'].map(item => {
+                    const fs = activeFilters[item] || 0;
+                    return (
+                      <div key={item} className="flex items-center justify-between text-[13px]">
+                        <span className={fs === 1 ? 'text-emerald-600 font-bold' : fs === -1 ? 'text-red-400 line-through' : ''}>{item}</span>
+                        <div className="flex gap-1">
+                          <button onClick={() => toggleFilter(item, 1)} className={fs === 1 ? 'text-emerald-600' : 'text-gray-300'}><CircleDot size={16}/></button>
+                          <button onClick={() => toggleFilter(item, -1)} className={fs === -1 ? 'text-red-500' : 'text-gray-300'}><MinusCircle size={16}/></button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </section>
+
+                <section className="space-y-3 pt-4 border-t">
+                  <h3 className="text-xs font-black text-[#45556C] uppercase tracking-widest">Relaxation & Wellness</h3>
+                  {['Yoga/Retreat', 'Beachfront', 'Fine Dining', 'Boutique Stay'].map(item => {
+                    const fs = activeFilters[item] || 0;
+                    return (
+                      <div key={item} className="flex items-center justify-between text-[13px]">
+                        <span className={fs === 1 ? 'text-emerald-600 font-bold' : fs === -1 ? 'text-red-400 line-through' : ''}>{item}</span>
+                        <div className="flex gap-1">
+                          <button onClick={() => toggleFilter(item, 1)} className={fs === 1 ? 'text-emerald-600' : 'text-gray-300'}><CircleDot size={16}/></button>
+                          <button onClick={() => toggleFilter(item, -1)} className={fs === -1 ? 'text-red-500' : 'text-gray-300'}><MinusCircle size={16}/></button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </section>
+
+                <section className="space-y-3 pt-4 border-t">
+                  <h3 className="text-xs font-black text-[#45556C] uppercase tracking-widest">Travel Ease</h3>
+                  {['Direct Flights', 'One-Stop Flights', 'Driving Distance', 'International', 'Big City/Arts'].map(item => {
+                    const fs = activeFilters[item] || 0;
+                    return (
+                      <div key={item} className="flex items-center justify-between text-[13px]">
+                        <span className={fs === 1 ? 'text-emerald-600 font-bold' : fs === -1 ? 'text-red-400 line-through' : ''}>{item}</span>
+                        <div className="flex gap-1">
+                          <button onClick={() => toggleFilter(item, 1)} className={fs === 1 ? 'text-emerald-600' : 'text-gray-300'}><CircleDot size={16}/></button>
+                          <button onClick={() => toggleFilter(item, -1)} className={fs === -1 ? 'text-red-500' : 'text-gray-300'}><MinusCircle size={16}/></button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </section>
               </div>
             </div>
           </aside>
@@ -397,4 +441,4 @@ export const CMEPlanner = ({ cmeStatus = DEFAULT_CME_STATUS }: any) => {
   );
 };
 
-// End of Patch #172
+// End of Patch #CP174
